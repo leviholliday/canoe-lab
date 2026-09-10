@@ -207,6 +207,30 @@
 
   .heel-controls{display:flex;flex-direction:column;gap:20px;margin-top:28px;}
 
+  /* ---------------- FIX ADVISOR ---------------- */
+  .fix-panel{margin-top:44px;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .fix-panel[hidden]{display:none;}
+  .fix-head{display:flex;align-items:baseline;gap:12px;padding:20px 26px;background:var(--ash);
+    border-bottom:1px solid var(--border);}
+  .fix-head h3{font-size:16px;font-weight:600;letter-spacing:-.01em;}
+  .fix-head span{font-size:12.5px;color:var(--muted);}
+  .fix-list{list-style:none;}
+  .fix-list li{display:flex;gap:18px;padding:18px 26px;border-top:1px solid var(--border);align-items:baseline;}
+  .fix-list li:first-child{border-top:0;}
+  .fix-list .fx-label{flex:none;width:150px;font-size:12px;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--amber);}
+  .fix-list .fx-detail{font-size:14.5px;color:var(--ink-2);line-height:1.6;}
+  @media(max-width:640px){
+    .fix-list li{flex-direction:column;gap:6px;}
+    .fix-list .fx-label{width:auto;}
+  }
+  .fix-panel.all-clear .fix-head{background:#f2f9f5;border-bottom-color:#d6ebe0;}
+  .fix-panel.all-clear .fx-label{color:var(--green);}
+
+  .printbtn{background:transparent;border:1px solid var(--border-2);color:var(--ink-2);font-family:var(--sans);
+    font-size:12.5px;font-weight:600;padding:9px 16px;border-radius:6px;cursor:pointer;transition:.3s var(--ease);}
+  .printbtn:hover{background:var(--ash);}
+
   /* ---------------- CHECKLIST ---------------- */
   .checklist{list-style:none;display:flex;flex-direction:column;}
   .checklist li{display:flex;align-items:flex-start;gap:13px;padding:15px 0;border-top:1px solid var(--border);}
@@ -231,10 +255,21 @@
   .note{font-size:12px;color:var(--meta);margin-top:20px;line-height:1.5;}
 
   @media print{
-    nav,.scroll-cue,.cta,.hero .sea{display:none;}
+    nav,.scroll-cue,.cta,.hero .sea,.printbtn,.sharebtn,.subtabs{display:none;}
     .stage{position:static;}
     section.block{padding:28px 0;break-inside:avoid;}
     .hero{min-height:auto;padding:30px 0;}
+    .reveal{opacity:1!important;transform:none!important;}
+
+    /* "Print build sheet" trims the page down to the diagram + cut list */
+    body.print-buildsheet .hero,
+    body.print-buildsheet #hydrostatics,
+    body.print-buildsheet #stability,
+    body.print-buildsheet #safety,
+    body.print-buildsheet footer,
+    body.print-buildsheet .controls{display:none!important;}
+    body.print-buildsheet .config{grid-template-columns:1fr;gap:24px;}
+    body.print-buildsheet .buildsheet-grid{grid-template-columns:1fr 1fr;gap:36px;}
   }
 </style>
 </head>
@@ -502,6 +537,7 @@
         <div class="eyebrow">Build Sheet</div>
         <h2 class="lead" style="max-width:24ch;">What to <span class="thin">actually cut.</span></h2>
         <p class="sub">Flat panel sizes and tape length for the hull shape and dimensions above — cut these, fold at the marked lines, and tape the seams.</p>
+        <button class="printbtn" id="printBtn" type="button" style="margin-top:20px;">Print build sheet</button>
         <div class="buildsheet-grid">
           <div>
             <div class="datarow"><div class="lbl">Bottom panel<small>full hull length × bottom width</small></div><div class="val" id="cutBottom">—</div></div>
@@ -608,6 +644,15 @@
         </div>
         <div class="warns reveal" id="warnList"></div>
       </div>
+
+      <div class="fix-panel reveal" id="fixPanel" hidden>
+        <div class="fix-head">
+          <h3 id="fixTitle">How to fix it</h3>
+          <span id="fixSub">Worked backwards from each limit — the smallest change that clears it.</span>
+        </div>
+        <ul class="fix-list" id="fixList"></ul>
+      </div>
+
       <p class="note">Model treats the hull as a vertical-topsides trough tapering below the chine to the bottom width, and estimates trim from small-angle longitudinal stability about the hull's midpoint. It's a working approximation, not a full 3D naval-architecture solve.</p>
 
       <div class="safety reveal" style="margin-top:90px;">
@@ -858,6 +903,92 @@
     return lo;
   }
 
+  // Smallest value of a single geometry field that makes `passes` true, by bisection.
+  // Assumes raising the field helps. Returns null if even `hiCap` doesn't clear it.
+  function findMinFieldValue(s, field, hiCap, passes){
+    const current = s[field];
+    if (passes(Object.assign({}, s, { [field]: current }))) return current;
+    if (!passes(Object.assign({}, s, { [field]: hiCap }))) return null;
+    let lo = current, hi = hiCap;
+    for (let i = 0; i < 36; i++) {
+      const mid = (lo + hi) / 2;
+      if (passes(Object.assign({}, s, { [field]: mid }))) hi = mid; else lo = mid;
+    }
+    return hi;
+  }
+
+  // Counterpart for constraints where *lowering* the field is what helps.
+  function findMaxFieldValue(s, field, loCap, passes){
+    const current = s[field];
+    if (passes(Object.assign({}, s, { [field]: current }))) return current;
+    if (!passes(Object.assign({}, s, { [field]: loCap }))) return null;
+    let lo = loCap, hi = current;
+    for (let i = 0; i < 36; i++) {
+      const mid = (lo + hi) / 2;
+      if (passes(Object.assign({}, s, { [field]: mid }))) lo = mid; else hi = mid;
+    }
+    return lo;
+  }
+
+  // For each check that isn't passing, work backwards to the concrete change that clears it.
+  function suggestFixes(s, r, stab){
+    const fixes = [];
+
+    // freeboard — raise the walls, or shed weight
+    if (r.freeboard < FREEBOARD_FAIL) {
+      const needH = findMinFieldValue(s, 'H', s.H * 5, s2 => computeHydrostatics(s2).freeboard >= FREEBOARD_FAIL);
+      const capacity = solveCapacity(s);
+      const parts = [];
+      if (needH) parts.push(`raise the wall height to ${fmt(needH,1)} in (+${fmt(needH - s.H,1)})`);
+      if (capacity < r.crewWeight) parts.push(`or cut crew weight to ${fmt(capacity,0)} lbs (−${fmt(r.crewWeight - capacity,0)})`);
+      if (parts.length) fixes.push({ label: 'Freeboard', detail: parts.join(', ') });
+    }
+
+    // roll instability — widen the beam or shorten the hull
+    if (r.lwRatio > ROLL_CAUTION) {
+      const beamFor = s.L / ROLL_CAUTION;
+      const lenFor = s.W * ROLL_CAUTION;
+      fixes.push({
+        label: 'Roll / length-to-beam',
+        detail: `widen the beam to ${fmt(beamFor,1)} in (+${fmt(beamFor - s.W,1)}), or shorten the hull to ${fmt(lenFor,0)} in (−${fmt(s.L - lenFor,0)})`
+      });
+    }
+
+    // GM — a wider beam raises BM fastest (it scales with waterline width cubed)
+    if (stab.GM < GM_CAUTION) {
+      const needW = findMinFieldValue(s, 'W', s.W * 4, s2 => {
+        const r2 = computeHydrostatics(s2);
+        return computeStability(s2, r2, 0).GM >= GM_CAUTION;
+      });
+      if (needW) {
+        fixes.push({
+          label: 'Stability (GM)',
+          detail: `widen the beam to ${fmt(needW,1)} in (+${fmt(needW - s.W,1)}) — beam drives GM harder than anything else, since it scales with waterline width cubed`
+        });
+      } else {
+        fixes.push({ label: 'Stability (GM)', detail: 'widen the beam and keep the crew sitting low — kneeling instead of perching on a seat drops the center of gravity' });
+      }
+    }
+
+    // legroom — pure geometry, no search needed
+    const requiredLeg = (s.p1shin + s.p2shin) * LEG_MARGIN;
+    if (s.L - SEAT_ALLOWANCE_IN < requiredLeg) {
+      const needL = requiredLeg + SEAT_ALLOWANCE_IN;
+      fixes.push({ label: 'Legroom', detail: `lengthen the hull to ${fmt(needL,0)} in (+${fmt(needL - s.L,0)})` });
+    }
+
+    // material — the wrap has to come off one roll
+    if (r.materialPct > MATERIAL_CAUTION) {
+      const maxL = findMaxFieldValue(s, 'L', 24, s2 => computeHydrostatics(s2).materialPct <= MATERIAL_CAUTION);
+      const detail = maxL !== null && maxL < s.L
+        ? `shorten the hull to about ${fmt(maxL,0)} in, or source a second roll`
+        : 'trim the hull dimensions, or source a second roll';
+      fixes.push({ label: 'Material', detail });
+    }
+
+    return fixes;
+  }
+
   function statusOf(value, cautionAt, failAt, higherIsWorse){
     if (higherIsWorse) {
       if (value > failAt) return 'fail';
@@ -1029,6 +1160,39 @@
     $('#p2Label').textContent = `P2 · ${fmt(s.p2w,0)}`;
   }
 
+  function renderFixes(s, r, stab, checks){
+    const panel = $('#fixPanel'), list = $('#fixList');
+    const fixes = suggestFixes(s, r, stab);
+    const allPass = checks.every(c => c.status === 'pass');
+
+    if (fixes.length) {
+      panel.classList.remove('all-clear');
+      $('#fixTitle').textContent = 'How to fix it';
+      $('#fixSub').textContent = 'Worked backwards from each limit — the smallest change that clears it.';
+      list.innerHTML = fixes.map(f => `
+        <li><span class="fx-label">${f.label}</span><span class="fx-detail">${f.detail}</span></li>
+      `).join('');
+      panel.removeAttribute('hidden');
+      return;
+    }
+
+    if (allPass) {
+      const capacity = solveCapacity(s);
+      const headroom = capacity - r.crewWeight;
+      panel.classList.add('all-clear');
+      $('#fixTitle').textContent = 'Nothing to fix';
+      $('#fixSub').textContent = 'Every limit has margin left. Here’s how much.';
+      list.innerHTML = `
+        <li><span class="fx-label">Weight headroom</span><span class="fx-detail">${fmt(headroom,0)} lbs of crew weight spare before freeboard or stability gives out (${fmt(capacity,0)} lbs total).</span></li>
+        <li><span class="fx-label">Freeboard margin</span><span class="fx-detail">${fmt(r.freeboard - FREEBOARD_FAIL,1)} in above the ${FREEBOARD_FAIL} in splash-flood line.</span></li>
+        <li><span class="fx-label">Heel margin</span><span class="fx-detail">She can lean about ${fmt(stab.critAngleDeg,0)}° before the rail starts taking water.</span></li>`;
+      panel.removeAttribute('hidden');
+      return;
+    }
+
+    panel.setAttribute('hidden', '');
+  }
+
   /* ---------- profile / trim diagram (side view) ---------- */
   function updateProfileDiagram(s, r){
     const bandLeft = 50, bandRight = 710, bandTop = 50, bandBottom = 210;
@@ -1148,6 +1312,7 @@
 
     const checks = buildChecks(s, r, stab);
     renderChecks(checks);
+    renderFixes(s, r, stab, checks);
     updateDiagram(s, r);
     updateProfileDiagram(s, r);
     updateHeelDiagram(s, r, stab, s.heelDeg);
@@ -1180,6 +1345,12 @@
       if (show) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
     });
   }));
+
+  $('#printBtn').addEventListener('click', () => {
+    document.body.classList.add('print-buildsheet');
+    window.print();
+  });
+  window.addEventListener('afterprint', () => document.body.classList.remove('print-buildsheet'));
 
   // checklist strike-through
   $$('#checklist input[type=checkbox]').forEach(cb => cb.addEventListener('change', () => {

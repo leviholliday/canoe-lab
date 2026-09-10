@@ -19,7 +19,8 @@ number is computed live; nothing is hardcoded.
 | **Roll stability** | Real metacentric height (GM = KB + BM − KG), with a heel-angle preview diagram |
 | **Capacity** | Max safe crew weight this exact hull can carry before any check fails |
 | **Safety envelope** | Five live checks: freeboard, L/W ratio, GM, legroom, material budget |
-| **Build sheet** | Flat panel cut dimensions, fold lines, tape length, estimated hull weight |
+| **Fix advisor** | Inverts every failing check to tell you the smallest change that clears it |
+| **Build sheet** | Flat panel cut dimensions, fold lines, tape length, estimated hull weight — printable |
 | **Race day** | Checklist of rules common across regattas |
 
 Inputs are encoded in the URL — hit **Copy Link** to share a design with your team.

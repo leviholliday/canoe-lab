@@ -324,7 +324,7 @@
         <!-- STAGE -->
         <div class="stage">
           <div class="frame">
-            <div class="subtabs" data-group="view">
+            <div class="subtabs" data-group="view" role="group" aria-label="Diagram view">
               <button class="on" data-val="section">Midship Section</button>
               <button data-val="profile">Profile · Trim</button>
             </div>
@@ -403,7 +403,7 @@
             </svg>
 
             <div class="figrow">
-              <div class="shape-tabs" data-group="shape">
+              <div class="shape-tabs" data-group="shape" role="group" aria-label="Hull cross-section shape">
                 <button data-val="flat">Flat Box</button><button class="on" data-val="vhull">V-Hull</button><button data-val="trapezoid">Trapezoid</button>
               </div>
               <span class="trim" id="trimLabel">Trim · level</span>
@@ -431,19 +431,19 @@
             <div class="clabel"><span class="n">01</span><h3>Paddlers &amp; Trim</h3></div>
             <div class="fld">
               <label>Paddler 1 — Weight</label>
-              <div class="ip"><input type="number" id="p1Weight" value="165" min="0" step="1"><span class="u">lbs</span></div>
+              <div class="ip"><input type="number" id="p1Weight" value="165" min="0" max="600" step="1"><span class="u">lbs</span></div>
             </div>
             <div class="fld">
               <label>Paddler 1 — Position</label>
-              <div class="seg" data-group="p1pos"><button class="on" data-val="bow">Bow · Front</button><button data-val="stern">Stern · Rear</button></div>
+              <div class="seg" data-group="p1pos" role="group" aria-label="Paddler 1 seat position"><button class="on" data-val="bow">Bow · Front</button><button data-val="stern">Stern · Rear</button></div>
             </div>
             <div class="fld">
               <label>Paddler 2 — Weight</label>
-              <div class="ip"><input type="number" id="p2Weight" value="140" min="0" step="1"><span class="u">lbs</span></div>
+              <div class="ip"><input type="number" id="p2Weight" value="140" min="0" max="600" step="1"><span class="u">lbs</span></div>
             </div>
             <div class="fld">
               <label>Paddler 2 — Position</label>
-              <div class="seg" data-group="p2pos"><button data-val="bow">Bow · Front</button><button class="on" data-val="stern">Stern · Rear</button></div>
+              <div class="seg" data-group="p2pos" role="group" aria-label="Paddler 2 seat position"><button data-val="bow">Bow · Front</button><button class="on" data-val="stern">Stern · Rear</button></div>
             </div>
             <div class="fld">
               <div class="slide-top"><label style="margin:0;">Weight Safety Margin</label><span class="v" id="mval">10%</span></div>
@@ -457,11 +457,11 @@
             <div class="two">
               <div class="fld" style="margin:0;">
                 <label>P1 Shin</label>
-                <div class="ip"><input type="number" id="p1Shin" value="17" min="0" step="0.5"><span class="u">in</span></div>
+                <div class="ip"><input type="number" id="p1Shin" value="17" min="0" max="40" step="0.5"><span class="u">in</span></div>
               </div>
               <div class="fld" style="margin:0;">
                 <label>P2 Shin</label>
-                <div class="ip"><input type="number" id="p2Shin" value="16" min="0" step="0.5"><span class="u">in</span></div>
+                <div class="ip"><input type="number" id="p2Shin" value="16" min="0" max="40" step="0.5"><span class="u">in</span></div>
               </div>
             </div>
             <div class="hlp">Floor must clear combined shin length plus a 25% seating margin, after ~48 in reserved for two seats.</div>
@@ -478,12 +478,12 @@
               </select>
             </div>
             <div class="two">
-              <div class="fld" style="margin:0;"><label>Length</label><div class="ip"><input type="number" id="hullLength" value="120" min="24" step="1"><span class="u">in</span></div></div>
-              <div class="fld" style="margin:0;"><label>Width</label><div class="ip"><input type="number" id="hullBeam" value="30" min="8" step="1"><span class="u">in</span></div></div>
+              <div class="fld" style="margin:0;"><label>Length</label><div class="ip"><input type="number" id="hullLength" value="120" min="24" max="400" step="1"><span class="u">in</span></div></div>
+              <div class="fld" style="margin:0;"><label>Width</label><div class="ip"><input type="number" id="hullBeam" value="30" min="8" max="120" step="1"><span class="u">in</span></div></div>
             </div>
             <div class="fld" style="margin-top:20px;margin-bottom:0;">
               <label>Wall Height</label>
-              <div class="ip"><input type="number" id="wallHeight" value="18" min="6" step="0.5"><span class="u">in</span></div>
+              <div class="ip"><input type="number" id="wallHeight" value="18" min="6" max="60" step="0.5"><span class="u">in</span></div>
             </div>
           </div>
 
@@ -500,7 +500,7 @@
             <div class="clabel"><span class="n">05</span><h3>Hull Weight</h3></div>
             <div class="fld">
               <label>How do you want to set it?</label>
-              <div class="seg" data-group="weightMode">
+              <div class="seg" data-group="weightMode" role="group" aria-label="How to set hull weight">
                 <button class="on" data-val="estimate">Estimate from Material</button>
                 <button data-val="direct">I Know the Weight</button>
               </div>
@@ -525,7 +525,7 @@
             <div id="weightDirectPane" hidden>
               <div class="fld" style="margin-bottom:0;">
                 <label>Hull Weight (weighed or targeted)</label>
-                <div class="ip"><input type="number" id="hullWeightDirect" value="20" min="0" step="1"><span class="u">lbs</span></div>
+                <div class="ip"><input type="number" id="hullWeightDirect" value="20" min="0" max="400" step="1"><span class="u">lbs</span></div>
               </div>
             </div>
           </div>
@@ -636,7 +636,7 @@
           <div class="eyebrow">Safety Envelope</div>
           <h2 class="lead">Five ways <span class="thin">to stay dry.</span></h2>
           <p class="sub">The simulator watches these limits in real time and flags the boat before it ever touches water.</p>
-          <div class="status-badge">
+          <div class="status-badge" role="status" aria-live="polite" aria-atomic="true">
             <span class="dot" id="badgeDot"></span>
             <b id="badgeText">Race ready</b>
             <span id="badgeSub">All four checks pass</span>
@@ -712,6 +712,15 @@
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const setAll = (cls, text) => $$(cls).forEach(el => el.textContent = text);
   const fmt = (n, d) => (Number.isFinite(n) ? n.toFixed(d == null ? 1 : d) : "—");
+
+  // Toggle buttons carry their state only in a CSS class, which tells assistive tech
+  // nothing. aria-pressed conveys it without implying radio-group arrow-key semantics
+  // we don't actually implement.
+  function syncToggleAria(){
+    $$('.seg button, .shape-tabs button, .subtabs button').forEach(b => {
+      b.setAttribute('aria-pressed', b.classList.contains('on') ? 'true' : 'false');
+    });
+  }
 
   function setShape(val){
     $('#hullShape').value = val;
@@ -1309,6 +1318,15 @@
 
     // heel slider readout
     $('#heelVal').textContent = fmt(s.heelDeg,0) + '°';
+
+    // accessibility: toggle states, slider values read as words, described diagrams
+    syncToggleAria();
+    $('#margin').setAttribute('aria-valuetext', `${fmt(s.marginPct,0)} percent`);
+    $('#heelAngle').setAttribute('aria-valuetext', `${fmt(s.heelDeg,0)} degrees`);
+    $('.view-pane[data-view="section"]').setAttribute('aria-label',
+      `Midship cross-section: ${fmt(s.W,0)} inch beam, ${fmt(s.H,0)} inch walls, sitting at ${fmt(Math.min(Math.max(r.d0,0),s.H),1)} inches of draft with ${fmt(r.freeboard,1)} inches of freeboard.`);
+    $('.view-pane[data-view="profile"]').setAttribute('aria-label',
+      `Side profile: bow draft ${fmt(Math.max(r.bowDraft,0),1)} inches, stern draft ${fmt(Math.max(r.sternDraft,0),1)} inches.`);
 
     const checks = buildChecks(s, r, stab);
     renderChecks(checks);

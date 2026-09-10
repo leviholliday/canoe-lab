@@ -5,45 +5,43 @@
       <stop offset="1" stop-color="#eef4f8"/>
     </linearGradient>
     <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7fc3dd" stop-opacity=".55"/>
-      <stop offset="1" stop-color="#2b7ea3" stop-opacity=".55"/>
+      <stop offset="0" stop-color="#7fc3dd" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#2b7ea3" stop-opacity=".5"/>
     </linearGradient>
   </defs>
 
   <rect width="1200" height="630" fill="url(#sky)"/>
 
-  <text x="80" y="122" font-size="21" font-weight="600" letter-spacing="7" fill="#1a5fd6">CANOE · LAB</text>
-  <text x="80" y="228" font-size="76" font-weight="600" letter-spacing="-2.4" fill="#171a20">Design a canoe</text>
-  <text x="80" y="308" font-size="76" font-weight="300" letter-spacing="-2.4" fill="#5c5e62">that actually floats.</text>
-  <text x="80" y="368" font-size="24" fill="#5c5e62">Draft, freeboard, trim, roll stability, and a cardboard cut list —</text>
-  <text x="80" y="402" font-size="24" fill="#5c5e62">computed live as you change any number.</text>
+  <text x="80" y="118" font-size="21" font-weight="600" letter-spacing="7" fill="#1a5fd6">CANOE · LAB</text>
+  <text x="80" y="222" font-size="72" font-weight="600" letter-spacing="-2.2" fill="#171a20">Design a canoe</text>
+  <text x="80" y="298" font-size="72" font-weight="300" letter-spacing="-2.2" fill="#5c5e62">that actually floats.</text>
+  <text x="80" y="360" font-size="23" fill="#5c5e62">Draft, freeboard, trim, roll stability, and a</text>
+  <text x="80" y="392" font-size="23" fill="#5c5e62">cardboard cut list — computed live.</text>
 
-  <!-- hull cross-section, mirroring the app's own diagram -->
-  <g transform="translate(742 176)">
-    <rect x="-30" y="196" width="520" height="150" fill="url(#water)"/>
-    <line x1="-30" y1="196" x2="490" y2="196" stroke="#2b7ea3" stroke-width="2" stroke-dasharray="3 9" opacity=".75"/>
-    <path d="M92 40 L92 148 L230 256 L368 148 L368 40 Z" fill="#fbfcfd"/>
-    <path d="M119 196 L230 256 L341 196 Z" fill="#1a5fd6" opacity=".16"/>
-    <path d="M92 40 L92 148 L230 256 L368 148 L368 40" fill="none" stroke="#171a20" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="176" cy="96" r="17" fill="#171a20"/>
-    <circle cx="284" cy="96" r="15" fill="#1a5fd6"/>
-    <text x="230" y="18" text-anchor="middle" font-size="16" fill="#8e9095" font-family="SF Mono, ui-monospace, monospace">BEAM · 30 in</text>
+  <!-- hull cross-section, kept clear of the headline and the metric strip -->
+  <g transform="translate(700 74)">
+    <rect x="66" y="196" width="424" height="132" fill="url(#water)"/>
+    <line x1="66" y1="196" x2="490" y2="196" stroke="#2b7ea3" stroke-width="2" stroke-dasharray="3 9" opacity=".75"/>
+    <path d="M158 44 L158 148 L278 252 L398 148 L398 44 Z" fill="#fbfcfd"/>
+    <path d="M186 196 L278 252 L370 196 Z" fill="#1a5fd6" opacity=".16"/>
+    <path d="M158 44 L158 148 L278 252 L398 148 L398 44" fill="none" stroke="#171a20" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="234" cy="98" r="16" fill="#171a20"/>
+    <circle cx="330" cy="98" r="14" fill="#1a5fd6"/>
+    <text x="278" y="26" text-anchor="middle" font-size="16" fill="#8e9095" font-family="SF Mono, ui-monospace, monospace">BEAM · 30 in</text>
   </g>
 
   <!-- metric strip -->
-  <g font-family="SF Mono, ui-monospace, monospace">
-    <line x1="80" y1="470" x2="1120" y2="470" stroke="#e6e8ea" stroke-width="1.5"/>
-    <g fill="#8e9095" font-size="14" font-family="Avenir Next, Helvetica, sans-serif" font-weight="600" letter-spacing="1.6">
-      <text x="80" y="508">DRAFT</text>
-      <text x="340" y="508">FREEBOARD</text>
-      <text x="600" y="508">DISPLACED</text>
-      <text x="860" y="508">GM</text>
-    </g>
-    <g fill="#171a20" font-size="42" font-weight="500" letter-spacing="-1.4">
-      <text x="80" y="558">6.9<tspan font-size="19" fill="#8e9095"> in</tspan></text>
-      <text x="340" y="558">11.1<tspan font-size="19" fill="#8e9095"> in</tspan></text>
-      <text x="600" y="558">5.45<tspan font-size="19" fill="#8e9095"> ft³</tspan></text>
-      <text x="860" y="558">10.9<tspan font-size="19" fill="#8e9095"> in</tspan></text>
-    </g>
+  <line x1="80" y1="470" x2="1120" y2="470" stroke="#d9e0e4" stroke-width="1.5"/>
+  <g fill="#8e9095" font-size="14" font-weight="600" letter-spacing="1.6">
+    <text x="80" y="506">DRAFT</text>
+    <text x="340" y="506">FREEBOARD</text>
+    <text x="600" y="506">DISPLACED</text>
+    <text x="860" y="506">GM</text>
+  </g>
+  <g fill="#171a20" font-size="42" font-weight="500" letter-spacing="-1.4" font-family="SF Mono, ui-monospace, monospace">
+    <text x="80" y="556">6.9<tspan font-size="19" fill="#8e9095"> in</tspan></text>
+    <text x="340" y="556">11.1<tspan font-size="19" fill="#8e9095"> in</tspan></text>
+    <text x="600" y="556">5.45<tspan font-size="19" fill="#8e9095"> ft³</tspan></text>
+    <text x="860" y="556">10.9<tspan font-size="19" fill="#8e9095"> in</tspan></text>
   </g>
 </svg>
